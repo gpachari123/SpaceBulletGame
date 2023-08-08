@@ -15,20 +15,12 @@ int main() {
     while (window.isOpen())
     {
         sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed){
-                window.close();
-            }
-            else{
-                if (estadoActual == MENU) {
-                    if (!menu.HandleInput(event)) //Esperando a que devuelva false cuando se presione enter
-                        estadoActual = PARTIDA;
-                } else if (estadoActual == PARTIDA) {
-                    partida.HandleInput(event);
-                }
-            }
-        }
+
         ///////////////////////
+        bool buttonTriangulo = 0; // Por ejemplo, el botón A
+        bool buttonRedondo = 0; // Por ejemplo, el botón B
+        bool buttonX = false; // Por ejemplo, el botón X
+        bool buttonCuadrado = 0; // Por ejemplo, el botón Y
         // Comprobar si hay algún mando conectado
         if (sf::Joystick::isConnected(0)) // 0 representa el índice del mando (puede ser del 0 al 7)
         {
@@ -41,17 +33,33 @@ int main() {
             //std::cout << "Eje X: " << xAxis << ", Eje Y: " << yAxis << ", Botón A: " << buttonA << std::endl;
 
             // Obtener el estado de los botones
-            bool buttonTriangulo = sf::Joystick::isButtonPressed(0, 0); // Por ejemplo, el botón A
-            bool buttonRedondo = sf::Joystick::isButtonPressed(0, 1); // Por ejemplo, el botón B
-            bool buttonX = sf::Joystick::isButtonPressed(0, 2); // Por ejemplo, el botón X
-            bool buttonCuadrado = sf::Joystick::isButtonPressed(0, 3); // Por ejemplo, el botón Y
+            buttonTriangulo = sf::Joystick::isButtonPressed(0, 0); // Por ejemplo, el botón A
+            buttonRedondo = sf::Joystick::isButtonPressed(0, 1); // Por ejemplo, el botón B
+            buttonX = sf::Joystick::isButtonPressed(0, 2); // Por ejemplo, el botón X
+            buttonCuadrado = sf::Joystick::isButtonPressed(0, 3); // Por ejemplo, el botón Y
 
-            // Imprimir el estado de los botones
-            std::cout << "Boton Triangulo: " << buttonTriangulo << ", Boton Redondo: " << buttonRedondo << ", Boton X: " << buttonX << ", Boton Cuadrado: " << buttonCuadrado << std::endl;
 
         }
+        // Imprimir el estado de los botones
+        std::cout << "Boton Triangulo: " << buttonTriangulo << ", Boton Redondo: " << buttonRedondo << ", Boton X: " << buttonX << ", Boton Cuadrado: " << buttonCuadrado << std::endl;
 
         /////////////////////////
+
+
+        while (window.pollEvent(event)) {
+            if (event.type == sf::Event::Closed){
+                window.close();
+            }
+            else{
+                if (estadoActual == MENU) {
+                    if (!menu.HandleInput(event)) //Esperando a que devuelva false cuando se presione enter
+                        estadoActual = PARTIDA;
+                } else if (estadoActual == PARTIDA) {
+                    partida.HandleInput(event,buttonX);
+                }
+            }
+        }
+
 
 
 

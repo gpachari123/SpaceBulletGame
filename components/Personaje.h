@@ -60,26 +60,33 @@ public:
     };
 
     ///Override del manejador de eventos
-    void HandleInput(sf::Event event, std::vector<Proyectil> &proyectilesPartida, CompBarraPoder barra){
-        if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
-            this->moveUp();
-        else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
-            this->moveDown();
-        else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
-            this->moveLeft();
-        else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
-            this->moveRight();
-        else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
-        {
+    void HandleInput(sf::Event event, std::vector<Proyectil> &proyectilesPartida, CompBarraPoder barra,bool botonX){
+        if (event.type == sf::Event::KeyPressed){
+            if (event.key.code == sf::Keyboard::Up || botonX){
+                std::cout << "Boton Triangulo: " << botonX << std::endl;
+                this->moveUp();
+            }
+            else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
+                this->moveDown();
+            else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Left)
+                this->moveLeft();
+            else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Right)
+                this->moveRight();
+            else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Space)
+            {
 
+            }
         }
-        else if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Space)
-        {
-            //Definir Fuerza de lanzamiento
-            float fuerzaLanzamiento = barra.getProgreso(); //Esta es la fuerza de disparo, falta definir un valor maximo y una barra
-            //float fuerzaLanzamiento = 50;
-            sf::Vector2f v0 = 1.5f*fuerzaLanzamiento*vectorDireccionDisparo; // Velocidad inicial del proyectil ( se supone que el vector direccion debe estar normalizado)
-            this->Disparar(proyectilesPartida, v0);
+        else if(event.type == sf::Event::KeyReleased){
+            if (event.key.code == sf::Keyboard::Space)
+            {
+                //Definir Fuerza de lanzamiento
+                float fuerzaLanzamiento = barra.getProgreso(); //Esta es la fuerza de disparo, falta definir un valor maximo y una barra
+                //float fuerzaLanzamiento = 50;
+                sf::Vector2f v0 = 1.5f*fuerzaLanzamiento*vectorDireccionDisparo; // Velocidad inicial del proyectil ( se supone que el vector direccion debe estar normalizado)
+                this->Disparar(proyectilesPartida, v0);
+            }
+
         }
     }
 
@@ -138,7 +145,7 @@ public:
 
 
     void Update() override{
-        if (moveLeftEstado) this->moveUp();
+        //if (moveUpEstado) this->moveUp();
         barraVida->setPosicion(posicion);
         sprite->setPosition(posicion);
         anguloDisparo = VectorUtil::getAngleWithXAxis(vectorDireccionDisparo);
