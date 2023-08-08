@@ -15,6 +15,7 @@
 #include "../components/CompBarraPoder.h"
 #include "../components/Plataforma.h"
 #include "../components/Personaje.h"
+#include "../utils/VectorUtil.h"
 
 class Partida {
 private:
@@ -71,8 +72,8 @@ public:
     }
 
     void HandleInput(sf::Event event){
-        personaje1->HandleInput(event,proyectiles);
-        personaje2->HandleInput(event, proyectiles);
+        personaje1->HandleInput(event,proyectiles,*barraPoder);
+        personaje2->HandleInput(event, proyectiles,*barraPoder);
         barraPoder->HandleInput(event);
     }
     void Update(){
@@ -86,7 +87,24 @@ public:
         //Actualizar proyectiles
         for (auto& proyectil : proyectiles)
         {
-            proyectil.Update(deltaTime,gravity,aceleracionViento,plataformas);
+            sf::Vector2f posicionImpacto = proyectil.Update(deltaTime,gravity,aceleracionViento,plataformas);
+            if (posicionImpacto!=sf::Vector2f(0.f,0.f)){
+                //Evaluar cercania de danio a los personajes
+                float distancia1 = VectorUtil::distanceBetweenVector(posicionImpacto,personaje1->getPosicion());
+                float distancia2 = VectorUtil::distanceBetweenVector(posicionImpacto,personaje2->getPosicion());
+                //Evaluar la cercanica de la epxlosion para definir danio
+                if (distancia1<100){
+                    float danio = (100.f-distancia1)/3.f;
+                    personaje1->DisminuirVida(danio);
+                    //Aqui colocar un texto del danio hecho al personaje 1
+                }
+                if (distancia2<100){
+                    float danio = (100.f-distancia2)/3.f;
+                    personaje2->DisminuirVida(danio);
+                    //Aqui colocar un texto del danio hecho al personaje 2
+                }
+
+            }
         }
     }
     void Draw(){

@@ -60,6 +60,14 @@ public:
         vector.x = x;
         vector.y = y;
     }
+
+    //Funcion para obtener la distancia entre dos vectores ( cabeza de vectores)
+    static float distanceBetweenVector(const sf::Vector2f& v1,const sf::Vector2f& v2){
+        float deltaX = v2.x - v1.x;
+        float deltaY = v2.y - v1.y;
+
+        return std::sqrt(deltaX * deltaX + deltaY * deltaY);;
+    }
 };
 
 

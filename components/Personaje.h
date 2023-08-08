@@ -23,6 +23,13 @@ private:
     //Componentes adicionales de personaje
     CompBarraVida* barraVida;
     AnguloDisparo* compAnguloDisparo;
+
+    //Estados de movimiento
+    bool moveLeftEstado = false;
+    bool moveRightEstado = false;
+    bool moveUpEstado = false;
+    bool moveDownEstado = false;
+
 public:
     ///Constructor Clase Personaje
     Personaje(sf::Vector2f posInicial, float ancho, float alto,
@@ -50,11 +57,10 @@ public:
         window.draw(*this->sprite);
         //Dibujo de la barra de vida
         barraVida->Draw(window);
-
     };
 
     ///Override del manejador de eventos
-    void HandleInput(sf::Event event, std::vector<Proyectil> &proyectilesPartida){
+    void HandleInput(sf::Event event, std::vector<Proyectil> &proyectilesPartida, CompBarraPoder barra){
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
             this->moveUp();
         else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
@@ -70,9 +76,9 @@ public:
         else if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Space)
         {
             //Definir Fuerza de lanzamiento
-            //float fuerzaLanzamiento = barra.getProgreso(); //Esta es la fuerza de disparo, falta definir un valor maximo y una barra
-            float fuerzaLanzamiento = 50;
-            sf::Vector2f v0 = fuerzaLanzamiento*vectorDireccionDisparo; // Velocidad inicial del proyectil ( se supone que el vector direccion debe estar normalizado)
+            float fuerzaLanzamiento = barra.getProgreso(); //Esta es la fuerza de disparo, falta definir un valor maximo y una barra
+            //float fuerzaLanzamiento = 50;
+            sf::Vector2f v0 = 1.5f*fuerzaLanzamiento*vectorDireccionDisparo; // Velocidad inicial del proyectil ( se supone que el vector direccion debe estar normalizado)
             this->Disparar(proyectilesPartida, v0);
         }
     }
@@ -132,6 +138,7 @@ public:
 
 
     void Update() override{
+        if (moveLeftEstado) this->moveUp();
         barraVida->setPosicion(posicion);
         sprite->setPosition(posicion);
         anguloDisparo = VectorUtil::getAngleWithXAxis(vectorDireccionDisparo);
@@ -163,6 +170,10 @@ public:
         }
     }
 
+    void DisminuirVida(float vidaDisminuida){
+        barraVida->disminuirVida(vidaDisminuida);
+    }
+
     sf::Vector2f getDireccionDisparo(){
         return vectorDireccionDisparo;
     }
@@ -179,8 +190,6 @@ public:
                        "../images/armorBala.png",5,1);
         projectiles.push_back(bala);
     }
-
-    std::function<void(float, float)> eventoLanzarProyectil;
 };
 
 #endif //SPACEBULLET_PERSONAJE_H

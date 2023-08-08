@@ -7,6 +7,7 @@
 
 #include "Componente.h"
 #include "Plataforma.h"
+#include "Personaje.h"
 #include "ExplosionProyectil.h"
 #include "../utils/VectorUtil.h"
 
@@ -24,7 +25,7 @@ public:
         //Implementar constructor Plataforma
         velocidad = velocidadInicial;
         estaExplotado = false;
-        explosionProyectil = new ExplosionProyectil(posInicial,50.f,50.f);
+        explosionProyectil = new ExplosionProyectil(posInicial,70.f,70.f);
     }
 
     ///Override funcion Draw
@@ -38,9 +39,9 @@ public:
         }
     };
 
-    void Update(float deltaTime, sf::Vector2f gravedad, sf::Vector2f viento,
+    sf::Vector2f Update(float deltaTime, sf::Vector2f gravedad, sf::Vector2f viento,
                 std::vector<Plataforma> plataformas){
-
+        sf::Vector2f posicionProyectilImpactado (0.f,0.f);
         // Calcula el ángulo de la velocidad
         float angle = VectorUtil::getAngleWithXAxis(velocidad);
         //Vector para desfasar la ubicacion de la barra de vida------------------------------->
@@ -59,12 +60,13 @@ public:
                 if (plataforma.GetBound().contains(posicion)) {
                     estaExplotado = true;
                     //Generar daño
-                    std::cout<<"Se genera danio"<<std::endl;
-
+                    //std::cout<<"Se genera danio"<<std::endl;
+                    posicionProyectilImpactado = posicion;
                     break;
                 }
             }
         }
+        return posicionProyectilImpactado;
     }
 
 };
