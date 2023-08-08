@@ -36,7 +36,7 @@ public:
         return sf::Vector2f(x,y);
     }
 
-    ///Funcion para obtener el angulo que forma un vector con el vector "X" positivo
+    ///Funcion para obtener el angulo que forma un vector con el vector "X" positivo, en grados sexagesimales
     static float getAngleWithXAxis(const sf::Vector2f& vector){
         float x = vector.x;
         float y = vector.y;

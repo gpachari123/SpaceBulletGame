@@ -61,9 +61,9 @@ public:
 
     ///Funcion virtual (puede ser sobreescrito en clases derivadas)
     ///para Manejar los eventos
-    virtual void HandleInput(sf::Event event){
+    /*virtual void HandleInput(sf::Event event){
         //Por defecto no responde a eventos
-    }
+    }*/
 
     ///Funcion virtual (puede ser sobreescrito en clases derivadas)
     ///para Actualizar propieades del componente

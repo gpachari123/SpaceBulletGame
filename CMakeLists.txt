@@ -8,7 +8,7 @@ add_executable(SpaceBullet
         components/Componente.h
         utils/VectorUtil.h
         components/Plataforma.h general/Partida.h general/Menu.h
-        components/Personaje.h)
+        components/Personaje.h components/CompBarraPoder.h components/CompBarraVida.h components/AnguloDisparo.h components/FondoPartida.h components/Proyectil.h components/ExplosionProyectil.h)
 
 find_package(SFML 2.5.1 REQUIRED COMPONENTS graphics audio window network system)
 

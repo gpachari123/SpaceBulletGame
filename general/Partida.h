@@ -11,6 +11,8 @@
 #include <vector>
 #include<memory>
 #include "Menu.h"
+#include "../components/FondoPartida.h"
+#include "../components/CompBarraPoder.h"
 #include "../components/Plataforma.h"
 #include "../components/Personaje.h"
 
@@ -21,57 +23,90 @@ private:
     const float deltaTime = 10.f / 60.f; // Delta de tiempo para cálculos de movimiento (60 FPS)
     sf::RenderWindow& ventana;
 
+    FondoPartida *fondoPartida;
     std::vector<Plataforma> plataformas;
+    CompBarraPoder *barraPoder;
     Personaje *personaje1;
     Personaje *personaje2;
+
+    std::vector<Proyectil> proyectiles;
+
 
 public:
     Partida(sf::RenderWindow& window):
     ventana(window),
     aceleracionViento(sf::Vector2f(0.f, 0.f)){
         //Cargar fondo de mapa
+        float anchoPantalla = ventana.getSize().x;
+        float altoPantalla = ventana.getSize().y;
+        fondoPartida = new FondoPartida(sf::Vector2f(anchoPantalla/2, altoPantalla/2),
+                                        anchoPantalla,altoPantalla,
+                                        "../images/mapa.jpg",1,1);
         //Crear las plataformas
-        Plataforma plata1(sf::Vector2f(300.f, 300.f),400,100,
-                         "../images/plataformaAzul.png",1,1);
-        Plataforma plata2(sf::Vector2f(600.f, 500.f),400,100,
-                          "../images/plataformaAzul.png",1,1);
-        Plataforma plata3(sf::Vector2f(1200.f, 500.f),400,100,
-                          "../images/plataformaAzul.png",1,1);
-        Plataforma plata4(sf::Vector2f(900.f, 300.f),300,100,
-                          "../images/plataformaAzul.png",1,1);
+        Plataforma plata1(sf::Vector2f(300.f, 600.f),400,100,
+                         "../images/Plt2.png",1,1);
+        Plataforma plata2(sf::Vector2f(600.f, 800.f),400,100,
+                          "../images/Plt1.png",1,1);
+        Plataforma plata3(sf::Vector2f(1200.f, 800.f),400,100,
+                          "../images/Plt1.png",1,1);
+        Plataforma plata4(sf::Vector2f(900.f, 600.f),300,100,
+                          "../images/Plt1.png",1,1);
+        Plataforma plata5(sf::Vector2f(1500.f, 600.f),400,100,
+                          "../images/Plt2.png",1,1);
         plataformas.push_back(plata1);
         plataformas.push_back(plata2);
         plataformas.push_back(plata3);
         plataformas.push_back(plata4);
+        plataformas.push_back(plata5);
 
+        //Crea la barra de poder
+        barraPoder = new CompBarraPoder(sf::Vector2f(50, 830), sf::Vector2f(800, 40),
+                                        sf::Color::Green, sf::Color::Black);
         //Crear los personajes
         personaje1 = new Personaje(sf::Vector2f(300.f, 100.f),150,150,
                                "../images/cocodrilo.png",4,2);
-        personaje2 = new Personaje(sf::Vector2f(1000.f, 100.f),150,150,
+        personaje2 = new Personaje(sf::Vector2f(1500.f, 100.f),150,150,
                                    "../images/gatopsicopata.png",4,2);
 
     }
 
     void HandleInput(sf::Event event){
-        personaje1->HandleInput(event);
-        personaje2->HandleInput(event);
+        personaje1->HandleInput(event,proyectiles);
+        personaje2->HandleInput(event, proyectiles);
+        barraPoder->HandleInput(event);
     }
     void Update(){
         //Aplicar gravedad al personaje y actualizar su posicion
-        personaje1->AplicarGravedad(deltaTime,gravity,plataformas);
+        personaje1->AplicarGravedad(deltaTime,gravity+sf::Vector2f (0.f,10.f),plataformas);
         personaje1->Update();
 
-        personaje2->AplicarGravedad(deltaTime,gravity,plataformas);
+        personaje2->AplicarGravedad(deltaTime,gravity+sf::Vector2f (0.f,10.f),plataformas);
         personaje2->Update();
+
+        //Actualizar proyectiles
+        for (auto& proyectil : proyectiles)
+        {
+            proyectil.Update(deltaTime,gravity,aceleracionViento,plataformas);
+        }
     }
     void Draw(){
+        //Dibujar Fondo de pantalla
+        fondoPartida->Draw(ventana);
         //Dibujar Plataformas
         for (auto& plataforma : plataformas) {
             plataforma.Draw(ventana);
         }
+        //Dibujar Barra de Poder
+        barraPoder->Draw(ventana);
         //Dibujar personajes
         personaje1->Draw(ventana);
         personaje2->Draw(ventana);
+
+        //Dibujar proyectiles
+        for (auto& proyectil : proyectiles)
+        {
+            proyectil.Draw(ventana);
+        }
     }
 
 

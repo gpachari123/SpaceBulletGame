@@ -5,17 +5,24 @@
 #ifndef SPACEBULLET_PERSONAJE_H
 #define SPACEBULLET_PERSONAJE_H
 
+#include <functional>
 #include "Componente.h"
 #include "../utils/VectorUtil.h"
 #include "Plataforma.h"
+#include "Proyectil.h"
+#include "CompBarraVida.h"
+#include "AnguloDisparo.h"
 
 class Personaje: public Componente{
 private:
     float movementSpeed; //Velocidad de movimiento del personaje
-    bool estaSobrePlataforma;
     float anguloDisparo;
     sf::Vector2f vectorDireccionDisparo;
     bool estaEnCaidaLibre;
+
+    //Componentes adicionales de personaje
+    CompBarraVida* barraVida;
+    AnguloDisparo* compAnguloDisparo;
 public:
     ///Constructor Clase Personaje
     Personaje(sf::Vector2f posInicial, float ancho, float alto,
@@ -28,16 +35,26 @@ public:
         anguloDisparo = VectorUtil::getAngleWithXAxis(vectorDireccionDisparo);
         movementSpeed = 5.f;
         estaEnCaidaLibre = true;
+
+        //Cargar componentes adicionales a personaje
+        barraVida = new CompBarraVida(posicion,sf::Vector2f(80.f,10.f));
+        compAnguloDisparo = new AnguloDisparo(posicion,100.f,100.f,
+                                              "../images/canion.png",1,1);
     }
 
     ///Override funcion Draw
     void Draw(sf::RenderWindow& window) override{
+        //Dibujo del canion de lanzamiento
+        compAnguloDisparo->Draw(window);
         //Dibujo del Sprite del personaje
         window.draw(*this->sprite);
+        //Dibujo de la barra de vida
+        barraVida->Draw(window);
+
     };
 
     ///Override del manejador de eventos
-    void HandleInput(sf::Event event) override{
+    void HandleInput(sf::Event event, std::vector<Proyectil> &proyectilesPartida){
         if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Up)
             this->moveUp();
         else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::Down)
@@ -53,9 +70,10 @@ public:
         else if (event.type == sf::Event::KeyReleased && event.key.code == sf::Keyboard::Space)
         {
             //Definir Fuerza de lanzamiento
-            /*float fuerzaLanzamiento = barra.getProgreso(); //Esta es la fuerza de disparo, falta definir un valor maximo y una barra
+            //float fuerzaLanzamiento = barra.getProgreso(); //Esta es la fuerza de disparo, falta definir un valor maximo y una barra
+            float fuerzaLanzamiento = 50;
             sf::Vector2f v0 = fuerzaLanzamiento*vectorDireccionDisparo; // Velocidad inicial del proyectil ( se supone que el vector direccion debe estar normalizado)
-            this->Disparar(proyectiles2, v0);*/
+            this->Disparar(proyectilesPartida, v0);
         }
     }
 
@@ -112,17 +130,12 @@ public:
         RefreshAnimacion();
     }
 
-    float getPosicionY(){
-        return posicion.y;
-    }
 
     void Update() override{
-
-        //barraVida->setPosicion(position);
+        barraVida->setPosicion(posicion);
         sprite->setPosition(posicion);
-        //spriteFlecha->setPosition(position);
         anguloDisparo = VectorUtil::getAngleWithXAxis(vectorDireccionDisparo);
-        //spriteFlecha->setRotation(anguloDisparo);*/
+        compAnguloDisparo->Update(posicion,anguloDisparo);
     }
 
     void AplicarGravedad(float deltaTime, sf::Vector2f gravedad,
@@ -150,6 +163,24 @@ public:
         }
     }
 
+    sf::Vector2f getDireccionDisparo(){
+        return vectorDireccionDisparo;
+    }
+
+    sf::Vector2f getPosicion(){
+        return posicion;
+    }
+
+    void Disparar(std::vector<Proyectil> &projectiles, sf::Vector2f velocidadInicial) {
+        //Posicion de lazamiento de la bala
+        sf::Vector2f r0 = posicion;
+        //Geometria del proyectil
+        Proyectil bala(r0,velocidadInicial,60.f,30.f,
+                       "../images/armorBala.png",5,1);
+        projectiles.push_back(bala);
+    }
+
+    std::function<void(float, float)> eventoLanzarProyectil;
 };
 
 #endif //SPACEBULLET_PERSONAJE_H
