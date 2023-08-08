@@ -9,7 +9,7 @@
   <tr>
     <td align="center">
       <a href="#">
-        <img src="https://avatars.githubusercontent.com/u/131840985?v=4" width="100px;" alt="Yasmin"/><br>
+        <img src="https://avatars.githubusercontent.com/u/131840985?v=4" width="100px;" alt="Fernando"/><br>
         <sub>
           <b>DEZA SOTOMAYOR FERNANDO DAVID</b>
         </sub>
@@ -17,7 +17,7 @@
     </td>
     <td align="center">
       <a href="#">
-        <img src="https://avatars.githubusercontent.com/" width="100px;" alt="Joel"/><br>
+        <img src="https://avatars.githubusercontent.com/u/139518445?v=4" width="100px;" alt="Jose"/><br>
         <sub>
           <b>MACHACA MUÑIZ JOSE ALEJANDRO</b>
         </sub>
@@ -25,7 +25,7 @@
     </td>
     <td align="center">
       <a href="#">
-        <img src="https://avatars.githubusercontent.com/u/104391418?v=4" width="100px;" alt="Luis1"/><br>
+        <img src="https://avatars.githubusercontent.com/u/104391418?v=4" width="100px;" alt="Gerald"/><br>
         <sub>
           <b>PACHARI MILLIO GERALD</b>
         </sub>
@@ -33,7 +33,7 @@
     </td>
      <td align="center">
       <a href="#">
-        <img src="https://avatars.githubusercontent.com/u/133831781?v=4" width="100px;" alt="imanol"/><br>
+        <img src="https://avatars.githubusercontent.com/u/133831781?v=4" width="100px;" alt="Mario"/><br>
         <sub>
           <b>ZEGARRA ROJAS MARIO DENIS</b>
         </sub>
