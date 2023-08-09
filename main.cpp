@@ -61,7 +61,7 @@ int main() {
                     if (!menu.HandleInput(event)) //Esperando a que devuelva false cuando se presione enter
                         estadoActual = PARTIDA;
                 } else if (estadoActual == PARTIDA) {
-                    partida.HandleInput(event,buttonX);
+                    partida.HandleInput(event);
                 }
             }
         }

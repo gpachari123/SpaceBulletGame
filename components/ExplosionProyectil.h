@@ -39,7 +39,6 @@ public:
                                        sprite->getTexture()->getSize().x / divisionsprite.x,
                                        sprite->getTexture()->getSize().y / divisionsprite.y);
                 sprite->setTextureRect(rectangulo);
-
                 // Avanzar al siguiente frame de la explosión
                 if (frame_actual.x < divisionsprite.x - 1) {
                     frame_actual.x++;
@@ -47,7 +46,6 @@ public:
                     frame_actual.y++;
                     frame_actual.x = 0;
                 }
-
                 if (frame_actual.x >= divisionsprite.x) {
                     // Si se llegó al último frame, se detiene la animación
 
@@ -69,7 +67,6 @@ public:
         sprite->setPosition(posicion);
 
     }
-
 };
 
 

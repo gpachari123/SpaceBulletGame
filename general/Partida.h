@@ -71,9 +71,9 @@ public:
     }
 
 
-    void HandleInput(sf::Event event, bool botonX){
-        personaje1->HandleInput(event,proyectiles,*barraPoder,botonX);
-        personaje2->HandleInput(event, proyectiles,*barraPoder,botonX);
+    void HandleInput(sf::Event event){
+        personaje1->HandleInput(event,proyectiles,*barraPoder);
+        personaje2->HandleInput2(event, proyectiles,*barraPoder);
         barraPoder->HandleInput(event);
     }
     void Update(){
