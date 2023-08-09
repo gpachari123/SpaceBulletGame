@@ -21,8 +21,8 @@ private:
     bool estaEnCaidaLibre;
 
     //Componentes adicionales de personaje
-    CompBarraVida* barraVida;
-    AnguloDisparo* compAnguloDisparo;
+    std::unique_ptr<CompBarraVida> barraVida;
+    std::unique_ptr<AnguloDisparo> compAnguloDisparo;
 
 
 public:
@@ -39,9 +39,9 @@ public:
         estaEnCaidaLibre = true;
 
         //Cargar componentes adicionales a personaje
-        barraVida = new CompBarraVida(posicion,sf::Vector2f(80.f,10.f));
-        compAnguloDisparo = new AnguloDisparo(posicion,100.f,100.f,
-                                              "../images/canion.png",1,1);
+        barraVida = std::make_unique<CompBarraVida>(posicion, sf::Vector2f(80.f, 10.f));
+        compAnguloDisparo = std::make_unique<AnguloDisparo>(posicion, 100.f, 100.f,
+                                                            "../images/canion.png", 1, 1);
     }
 
     ///Override funcion Draw

@@ -10,12 +10,14 @@
 #include "Personaje.h"
 #include "ExplosionProyectil.h"
 #include "../utils/VectorUtil.h"
-
+#include <SFML/Audio.hpp>
 class Proyectil: public Componente{
 
 private:
     sf::Vector2f velocidad;
     bool estaExplotado; //
+    sf::Sound sonido;
+    sf::SoundBuffer buffer;
     ExplosionProyectil *explosionProyectil; //Siempre habra una explosion
 public:
     ///Constructor Clase Plataforma
@@ -26,6 +28,8 @@ public:
         velocidad = velocidadInicial;
         estaExplotado = false;
         explosionProyectil = new ExplosionProyectil(posInicial,70.f,70.f);
+        buffer.loadFromFile("../images/hq-explosion-6288.ogg");
+        sonido.setBuffer(buffer);
     }
 
     ///Override funcion Draw
@@ -58,10 +62,12 @@ public:
             //Verirficar si la posicion del sprite esta dentro de alguna plataforma
             for (auto& plataforma : plataformas) {
                 if (plataforma.GetBound().contains(posicion)) {
+                    sonido.play();
                     estaExplotado = true;
                     //Generar daño
                     //std::cout<<"Se genera danio"<<std::endl;
                     posicionProyectilImpactado = posicion;
+
                     break;
                 }
             }
