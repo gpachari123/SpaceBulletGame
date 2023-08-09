@@ -24,11 +24,6 @@ private:
     CompBarraVida* barraVida;
     AnguloDisparo* compAnguloDisparo;
 
-    //Estados de movimiento
-    bool moveLeftEstado = false;
-    bool moveRightEstado = false;
-    bool moveUpEstado = false;
-    bool moveDownEstado = false;
 
 public:
     ///Constructor Clase Personaje
@@ -60,7 +55,7 @@ public:
     };
 
     ///Override del manejador de eventos
-    void HandleInput(sf::Event event, std::vector<Proyectil> &proyectilesPartida, CompBarraPoder barra){
+    bool HandleInput(sf::Event event, std::vector<Proyectil> &proyectilesPartida, CompBarraPoder barra){
         if (event.type == sf::Event::KeyPressed){
             if (event.key.code == sf::Keyboard::Up)
                 this->moveUp();
@@ -83,37 +78,10 @@ public:
                 //float fuerzaLanzamiento = 50;
                 sf::Vector2f v0 = 1.5f*fuerzaLanzamiento*vectorDireccionDisparo; // Velocidad inicial del proyectil ( se supone que el vector direccion debe estar normalizado)
                 this->Disparar(proyectilesPartida, v0);
-            }
-
-        }
-    }
-
-    void HandleInput2(sf::Event event, std::vector<Proyectil> &proyectilesPartida, CompBarraPoder barra){
-        if (event.type == sf::Event::KeyPressed){
-            if (event.key.code == sf::Keyboard::W)
-                this->moveUp();
-            else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::S)
-                this->moveDown();
-            else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::A)
-                this->moveLeft();
-            else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::D)
-                this->moveRight();
-            else if (event.type == sf::Event::KeyPressed && event.key.code == sf::Keyboard::O)
-            {
-
+                return false;
             }
         }
-        else if(event.type == sf::Event::KeyReleased){
-            if (event.key.code == sf::Keyboard::O)
-            {
-                //Definir Fuerza de lanzamiento
-                float fuerzaLanzamiento = barra.getProgreso(); //Esta es la fuerza de disparo, falta definir un valor maximo y una barra
-                //float fuerzaLanzamiento = 50;
-                sf::Vector2f v0 = 1.5f*fuerzaLanzamiento*vectorDireccionDisparo; // Velocidad inicial del proyectil ( se supone que el vector direccion debe estar normalizado)
-                this->Disparar(proyectilesPartida, v0);
-            }
-
-        }
+        return true;
     }
 
 
@@ -209,8 +177,8 @@ public:
         barraVida->disminuirVida(vidaDisminuida);
     }
 
-    sf::Vector2f getDireccionDisparo(){
-        return vectorDireccionDisparo;
+    float getVida(){
+        return barraVida->getVida();
     }
 
     sf::Vector2f getPosicion(){

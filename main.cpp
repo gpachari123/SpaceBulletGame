@@ -20,6 +20,7 @@ int main() {
     {
         sf::Event event;
 
+        /*
         ///////////////////////
         bool buttonTriangulo = 0; // Por ejemplo, el botón A
         bool buttonRedondo = 0; // Por ejemplo, el botón B
@@ -47,7 +48,7 @@ int main() {
         // Imprimir el estado de los botones
         std::cout << "Boton Triangulo: " << buttonTriangulo << ", Boton Redondo: " << buttonRedondo << ", Boton X: " << buttonX << ", Boton Cuadrado: " << buttonCuadrado << std::endl;
 
-        /////////////////////////
+        /////////////////////////*/
 
 
         while (window.pollEvent(event)) {

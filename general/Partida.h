@@ -12,6 +12,8 @@
 #include<memory>
 #include "Menu.h"
 #include "../components/FondoPartida.h"
+#include "../components/MascaraBarraPoder.h"
+#include "../components/TimerTurnos.h"
 #include "../components/CompBarraPoder.h"
 #include "../components/Plataforma.h"
 #include "../components/Personaje.h"
@@ -25,13 +27,17 @@ private:
     sf::RenderWindow& ventana;
     FactoryEscenarios *factory;
     FondoPartida *fondoPartida;
+    MascaraBarraPoder *mascaraBarraPoder;
     std::vector<Plataforma> plataformas;
     CompBarraPoder *barraPoder;
     Personaje *personaje1;
     Personaje *personaje2;
     std::vector<Proyectil> proyectiles;
+    TimerTurnos *temporalizador;
+    bool esTurno1;
 
-
+    sf::Clock actionTimer;
+    sf::Time waitTime = sf::seconds(2.0f);
 public:
     Partida(sf::RenderWindow& window):
     ventana(window),
@@ -42,6 +48,8 @@ public:
         fondoPartida = new FondoPartida(sf::Vector2f(anchoPantalla/2, altoPantalla/2),
                                         anchoPantalla,altoPantalla,
                                         "../images/mapa.jpg",1,1);
+        mascaraBarraPoder = new MascaraBarraPoder(sf::Vector2f(anchoPantalla/2, altoPantalla-100.f),
+                                                  anchoPantalla,200.f);
         //Crear las plataformas
         Plataforma plata1(sf::Vector2f(300.f, 600.f),400,100,
                          "../images/Plt2.png",1,1);
@@ -60,7 +68,7 @@ public:
         plataformas.push_back(plata5);
 
         //Crea la barra de poder
-        barraPoder = new CompBarraPoder(sf::Vector2f(50, 830), sf::Vector2f(800, 40),
+        barraPoder = new CompBarraPoder(sf::Vector2f(580, 1000), sf::Vector2f(955, 40),
                                         sf::Color::Green, sf::Color::Black);
         //Crear los personajes
         personaje1 = new Personaje(sf::Vector2f(300.f, 100.f),150,150,
@@ -68,13 +76,39 @@ public:
         personaje2 = new Personaje(sf::Vector2f(1500.f, 100.f),150,150,
                                    "../images/gatopsicopata.png",4,2);
 
+        //Crear el temporalizador
+        temporalizador = new TimerTurnos(sf::Vector2f(1800.f,100.f),150.f,150.f);
+        esTurno1 = true;
     }
 
 
     void HandleInput(sf::Event event){
-        personaje1->HandleInput(event,proyectiles,*barraPoder);
-        personaje2->HandleInput2(event, proyectiles,*barraPoder);
+        if (esTurno1){
+            if (!personaje1->HandleInput(event,proyectiles,*barraPoder)){
+                esTurno1= false;
+                temporalizador->PararContabilizador();
+                temporalizador->ReinicarContador();
+            }
+            if (!temporalizador->EstaCorriendo()){
+                esTurno1= false;
+                temporalizador->PararContabilizador();
+                temporalizador->ReinicarContador();
+            }
+        }
+        else{
+            if (!personaje2->HandleInput(event,proyectiles,*barraPoder)){
+                esTurno1= true;
+                temporalizador->PararContabilizador();
+                temporalizador->ReinicarContador();
+            }
+            if (!temporalizador->EstaCorriendo()){
+                esTurno1= true;
+                temporalizador->PararContabilizador();
+                temporalizador->ReinicarContador();
+            }
+        }
         barraPoder->HandleInput(event);
+        temporalizador->HandleInput(event);
     }
     void Update(){
         //Aplicar gravedad al personaje y actualizar su posicion
@@ -106,6 +140,8 @@ public:
 
             }
         }
+
+        //Actualizar temporalizador
     }
     void Draw(){
         //Dibujar Fondo de pantalla
@@ -114,8 +150,7 @@ public:
         for (auto& plataforma : plataformas) {
             plataforma.Draw(ventana);
         }
-        //Dibujar Barra de Poder
-        barraPoder->Draw(ventana);
+
         //Dibujar personajes
         personaje1->Draw(ventana);
         personaje2->Draw(ventana);
@@ -125,6 +160,14 @@ public:
         {
             proyectil.Draw(ventana);
         }
+
+        //Dibujar Barra de Poder
+        barraPoder->Draw(ventana);
+        //Dibujar Mascara
+        mascaraBarraPoder->Draw(ventana);
+
+        //Dibujar temporalizador
+        temporalizador->Draw(ventana);
     }
 
 
