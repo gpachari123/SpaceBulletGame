@@ -28,7 +28,8 @@ public:
         velocidad = velocidadInicial;
         estaExplotado = false;
         explosionProyectil = new ExplosionProyectil(posInicial,70.f,70.f);
-        buffer.loadFromFile("../images/hq-explosion-6288.ogg");
+        //buffer.loadFromFile("../images/hq-explosion-6288.ogg");
+        buffer.loadFromFile("../images/Explosion.ogg");
         sonido.setBuffer(buffer);
     }
 

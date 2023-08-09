@@ -11,6 +11,8 @@
 #include <vector>
 #include<memory>
 #include "Menu.h"
+#include "../components/FlechaTurno.h"
+#include "../components/GameOver.h"
 #include "../components/FondoPartida.h"
 #include "../components/MascaraBarraPoder.h"
 #include "../components/TimerTurnos.h"
@@ -34,10 +36,12 @@ private:
     std::unique_ptr<Personaje> personaje2;
     std::vector<Proyectil> proyectiles;
     TimerTurnos *temporalizador;
+    FlechaTurno *flechaTurno;
     bool esTurno1;
+    GameOver *estadoGameOver;
 
-    sf::Clock actionTimer;
-    sf::Time waitTime = sf::seconds(2.0f);
+
+
 public:
     Partida(sf::RenderWindow& window):
     ventana(window),
@@ -79,6 +83,12 @@ public:
         //Crear el temporalizador
         temporalizador = new TimerTurnos(sf::Vector2f(1800.f,100.f),150.f,150.f);
         esTurno1 = true;
+
+        //Crea el mensajeGameOver para ser usado cuando acabe
+        estadoGameOver = new GameOver(sf::Vector2f (ventana.getSize().x/2.f,ventana.getSize().y/2.f),800,800);
+
+        //Crea la felcha de turno
+        flechaTurno = new FlechaTurno(personaje1->getPosicion(),50,50);
     }
 
 
@@ -110,7 +120,7 @@ public:
         barraPoder->HandleInput(event);
         temporalizador->HandleInput(event);
     }
-    void Update(){
+    bool Update(){
         //Aplicar gravedad al personaje y actualizar su posicion
         personaje1->AplicarGravedad(deltaTime,gravity+sf::Vector2f (0.f,10.f),plataformas);
         personaje1->Update();
@@ -140,8 +150,22 @@ public:
 
             }
         }
-
+        //Verificar estado de vida de los personajes
+        if (personaje1->getVida()<=0 || personaje2->getVida()<=0){
+            estadoGameOver->IniciarGameOver();
+        }
         //Actualizar temporalizador
+        if (estadoGameOver->YaSeUsoGameOver()){
+            //std::cout<<"Ya llamar al menu"<<std::endl;
+            return false;
+        }
+
+        //Actualizar Flecha
+        if (esTurno1)
+            flechaTurno->Update(personaje1->getPosicion());
+        else
+            flechaTurno->Update(personaje2->getPosicion());
+        return true;
     }
     void Draw(){
         //Dibujar Fondo de pantalla
@@ -168,6 +192,12 @@ public:
 
         //Dibujar temporalizador
         temporalizador->Draw(ventana);
+
+        //DibujarFlecha de turno
+        flechaTurno->Draw(ventana);
+
+        //Dibujar GameOver
+        estadoGameOver->Draw(ventana);
     }
 
 
