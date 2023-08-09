@@ -1,4 +1,4 @@
-//
+
 // Created by EQUIPO on 4/08/2023.
 //
 
@@ -27,8 +27,8 @@ private:
     FondoPartida *fondoPartida;
     std::vector<Plataforma> plataformas;
     CompBarraPoder *barraPoder;
-    Personaje *personaje1;
-    Personaje *personaje2;
+    std::unique_ptr<Personaje> personaje1;
+    std::unique_ptr<Personaje> personaje2;
     std::vector<Proyectil> proyectiles;
 
 
@@ -63,9 +63,9 @@ public:
         barraPoder = new CompBarraPoder(sf::Vector2f(50, 830), sf::Vector2f(800, 40),
                                         sf::Color::Green, sf::Color::Black);
         //Crear los personajes
-        personaje1 = new Personaje(sf::Vector2f(300.f, 100.f),150,150,
+        personaje1 = std::make_unique<Personaje>(sf::Vector2f(300.f, 100.f),150,150,
                                "../images/cocodrilo.png",4,2);
-        personaje2 = new Personaje(sf::Vector2f(1500.f, 100.f),150,150,
+        personaje2 = std::make_unique<Personaje>(sf::Vector2f(1500.f, 100.f),150,150,
                                    "../images/gatopsicopata.png",4,2);
 
     }

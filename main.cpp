@@ -19,7 +19,6 @@ int main() {
     while (window.isOpen())
     {
         sf::Event event;
-
         ///////////////////////
         bool buttonTriangulo = 0; // Por ejemplo, el botón A
         bool buttonRedondo = 0; // Por ejemplo, el botón B
@@ -31,18 +30,13 @@ int main() {
             // Obtener el estado del mando
             float xAxis = sf::Joystick::getAxisPosition(0, sf::Joystick::X);
             float yAxis = sf::Joystick::getAxisPosition(0, sf::Joystick::Y);
-
-
             // Imprimir la información del mando
             //std::cout << "Eje X: " << xAxis << ", Eje Y: " << yAxis << ", Botón A: " << buttonA << std::endl;
-
             // Obtener el estado de los botones
             buttonTriangulo = sf::Joystick::isButtonPressed(0, 0); // Por ejemplo, el botón A
             buttonRedondo = sf::Joystick::isButtonPressed(0, 1); // Por ejemplo, el botón B
             buttonX = sf::Joystick::isButtonPressed(0, 2); // Por ejemplo, el botón X
             buttonCuadrado = sf::Joystick::isButtonPressed(0, 3); // Por ejemplo, el botón Y
-
-
         }
         // Imprimir el estado de los botones
         std::cout << "Boton Triangulo: " << buttonTriangulo << ", Boton Redondo: " << buttonRedondo << ", Boton X: " << buttonX << ", Boton Cuadrado: " << buttonCuadrado << std::endl;
@@ -68,9 +62,7 @@ int main() {
 
         // Clear screen
         window.clear();
-
         // -------------------DRAW----------------------------------->
-
         if (estadoActual == MENU) {
             menu.Draw();
         } else if (estadoActual == PARTIDA) {
