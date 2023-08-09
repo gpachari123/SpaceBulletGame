@@ -16,20 +16,19 @@
 #include "../components/Plataforma.h"
 #include "../components/Personaje.h"
 #include "../utils/VectorUtil.h"
-
+#include "../components/factoryEscenarios.h"
 class Partida {
 private:
     sf::Vector2f aceleracionViento;
     const sf::Vector2f gravity = sf::Vector2f(0.f, 9.8f); // Gravedad (puedes ajustarla según tus necesidades)
     const float deltaTime = 10.f / 60.f; // Delta de tiempo para cálculos de movimiento (60 FPS)
     sf::RenderWindow& ventana;
-
+    FactoryEscenarios *factory;
     FondoPartida *fondoPartida;
     std::vector<Plataforma> plataformas;
     CompBarraPoder *barraPoder;
     Personaje *personaje1;
     Personaje *personaje2;
-
     std::vector<Proyectil> proyectiles;
 
 
@@ -70,6 +69,7 @@ public:
                                    "../images/gatopsicopata.png",4,2);
 
     }
+
 
     void HandleInput(sf::Event event, bool botonX){
         personaje1->HandleInput(event,proyectiles,*barraPoder,botonX);

@@ -8,7 +8,7 @@
 #include <memory>
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
-
+#include "Partida.h"
 class Menu {
 private:
     sf::RenderWindow& ventana;

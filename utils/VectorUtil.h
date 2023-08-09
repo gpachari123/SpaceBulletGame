@@ -49,9 +49,7 @@ public:
         float y = vector.y;
         float currentAngleRadians = std::atan2(y, x);
         float incrementRadians = incrementoDegrees * M_PI / 180.0f; // Convertir 1 grado a radianes
-
         float newAngleRadians = currentAngleRadians + incrementRadians;
-
         // Calcular las nuevas coordenadas con el ángulo incrementado
         float length = std::sqrt(x * x + y * y);
         x = length * std::cos(newAngleRadians);

@@ -8,23 +8,30 @@
 #include "Componente.h"
 #include "Plataforma.h"
 #include "../utils/VectorUtil.h"
-
+#include <SFML/Audio.hpp>
 class ExplosionProyectil: public Componente{
 
 private:
     sf::Clock clock;
     float frameTime = 0.1f; // Tiempo entre cada frame de la animación (ajústalo según tu necesidad)
     bool realcontacto;
+    sf::Sound sonido;
+    sf::SoundBuffer buffer;
 public:
     ///Constructor Clase Plataforma
     ExplosionProyectil(sf::Vector2f posInicial, float ancho, float alto)
-            : Componente(posInicial,ancho,alto,"../images/explosion2.png",4, 4){
+            : Componente(posInicial,ancho,alto,"../images/Explosion2.png",4, 4){
             realcontacto = true;
+            if(!buffer.loadFromFile("../images/explosion.ogg")){
+                std::cout<<"no se puede cargar archivo";
+            }
+            sonido.setBuffer(buffer);
     }
 
     ///Override funcion Draw
     void Draw(sf::RenderWindow& window) override{
         if (realcontacto) {
+            sonido.stop();
             if (clock.getElapsedTime().asSeconds() >= frameTime) {
                 // Actualizar frame
                 sf::IntRect rectangulo(frame_actual.x * (sprite->getTexture()->getSize().x / divisionsprite.x),
@@ -43,7 +50,10 @@ public:
 
                 if (frame_actual.x >= divisionsprite.x) {
                     // Si se llegó al último frame, se detiene la animación
+
                     realcontacto = false;
+                    sonido.play();
+                    sonido.setVolume(100);
                 }
                 clock.restart();
             }
@@ -57,6 +67,7 @@ public:
     }
     void Update(){
         sprite->setPosition(posicion);
+
     }
 
 };
