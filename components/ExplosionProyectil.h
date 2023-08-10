@@ -15,6 +15,7 @@ private:
     sf::Clock clock;
     float frameTime = 0.1f; // Tiempo entre cada frame de la animación (ajústalo según tu necesidad)
     bool realcontacto;
+    bool musica=false;
     sf::Sound sonido;
     sf::SoundBuffer buffer;
 public:
@@ -22,16 +23,17 @@ public:
     ExplosionProyectil(sf::Vector2f posInicial, float ancho, float alto)
             : Componente(posInicial,ancho,alto,"../images/Explosion2.png",4, 4){
             realcontacto = true;
-            if(!buffer.loadFromFile("../images/explosion.ogg")){
-                std::cout<<"no se puede cargar archivo";
-            }
+            buffer.loadFromFile("../images/explosion.ogg");
             sonido.setBuffer(buffer);
     }
 
     ///Override funcion Draw
     void Draw(sf::RenderWindow& window) override{
         if (realcontacto) {
-            sonido.stop();
+            if (!musica) { // Verificar si la música ya se reprodujo
+                sonido.play();
+                musica = true;
+            }
             if (clock.getElapsedTime().asSeconds() >= frameTime) {
                 // Actualizar frame
                 sf::IntRect rectangulo(frame_actual.x * (sprite->getTexture()->getSize().x / divisionsprite.x),
@@ -45,15 +47,16 @@ public:
                 } else {
                     frame_actual.y++;
                     frame_actual.x = 0;
+
                 }
                 if (frame_actual.x >= divisionsprite.x) {
                     // Si se llegó al último frame, se detiene la animación
 
                     realcontacto = false;
-                    sonido.play();
-                    sonido.setVolume(100);
                 }
                 clock.restart();
+
+
             }
             window.draw(*sprite);
         }

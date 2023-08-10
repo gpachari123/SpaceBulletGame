@@ -21,6 +21,7 @@
 #include "../components/Personaje.h"
 #include "../utils/VectorUtil.h"
 #include "../components/factoryEscenarios.h"
+#include <thread>
 class Partida {
 private:
     sf::Vector2f aceleracionViento;
@@ -28,69 +29,30 @@ private:
     const float deltaTime = 10.f / 60.f; // Delta de tiempo para cálculos de movimiento (60 FPS)
     sf::RenderWindow& ventana;
     FactoryEscenarios *factory;
-    FondoPartida *fondoPartida;
-    MascaraBarraPoder *mascaraBarraPoder;
+    std::unique_ptr<FondoPartida> fondoPartida;
+    std::unique_ptr<MascaraBarraPoder> mascaraBarraPoder;
     std::vector<Plataforma> plataformas;
-    CompBarraPoder *barraPoder;
+    std::unique_ptr<CompBarraPoder> barraPoder;
     std::unique_ptr<Personaje> personaje1;
     std::unique_ptr<Personaje> personaje2;
     std::vector<Proyectil> proyectiles;
-    TimerTurnos *temporalizador;
-    FlechaTurno *flechaTurno;
+    std::unique_ptr<TimerTurnos> temporalizador;
+    std::unique_ptr<FlechaTurno> flechaTurno;
     bool esTurno1;
-    GameOver *estadoGameOver;
-
-
-
+    std::unique_ptr<GameOver> estadoGameOver;
 public:
     Partida(sf::RenderWindow& window):
     ventana(window),
     aceleracionViento(sf::Vector2f(0.f, 0.f)){
         //Cargar fondo de mapa
-        float anchoPantalla = ventana.getSize().x;
-        float altoPantalla = ventana.getSize().y;
-        fondoPartida = new FondoPartida(sf::Vector2f(anchoPantalla/2, altoPantalla/2),
-                                        anchoPantalla,altoPantalla,
-                                        "../images/mapa.jpg",1,1);
-        mascaraBarraPoder = new MascaraBarraPoder(sf::Vector2f(anchoPantalla/2, altoPantalla-100.f),
-                                                  anchoPantalla,200.f);
-        //Crear las plataformas
-        Plataforma plata1(sf::Vector2f(300.f, 600.f),400,100,
-                         "../images/Plt2.png",1,1);
-        Plataforma plata2(sf::Vector2f(600.f, 800.f),400,100,
-                          "../images/Plt1.png",1,1);
-        Plataforma plata3(sf::Vector2f(1200.f, 800.f),400,100,
-                          "../images/Plt1.png",1,1);
-        Plataforma plata4(sf::Vector2f(900.f, 600.f),300,100,
-                          "../images/Plt1.png",1,1);
-        Plataforma plata5(sf::Vector2f(1500.f, 600.f),400,100,
-                          "../images/Plt2.png",1,1);
-        plataformas.push_back(plata1);
-        plataformas.push_back(plata2);
-        plataformas.push_back(plata3);
-        plataformas.push_back(plata4);
-        plataformas.push_back(plata5);
+        thread_recursos();
 
-        //Crea la barra de poder
-        barraPoder = new CompBarraPoder(sf::Vector2f(580, 1000), sf::Vector2f(955, 40),
-                                        sf::Color::Green, sf::Color::Black);
-        //Crear los personajes
-        personaje1 = std::make_unique<Personaje>(sf::Vector2f(300.f, 100.f),150,150,
-                               "../images/cocodrilo.png",4,2);
-        personaje2 = std::make_unique<Personaje>(sf::Vector2f(1500.f, 100.f),150,150,
-                                   "../images/gatopsicopata.png",4,2);
-
-        //Crear el temporalizador
-        temporalizador = new TimerTurnos(sf::Vector2f(1800.f,100.f),150.f,150.f);
-        esTurno1 = true;
-
-        //Crea el mensajeGameOver para ser usado cuando acabe
-        estadoGameOver = new GameOver(sf::Vector2f (ventana.getSize().x/2.f,ventana.getSize().y/2.f),800,800);
-
-        //Crea la felcha de turno
-        flechaTurno = new FlechaTurno(personaje1->getPosicion(),50,50);
     }
-
+    //carga de recursos en threads por medio de detach para un mejor rendimiento
+void thread_recursos(){
+        std::thread carga_rec(&Partida::cargar_recursos,this);
+        carga_rec.detach();
+    }
 
     void HandleInput(sf::Event event){
         if (esTurno1){
@@ -174,22 +136,18 @@ public:
         for (auto& plataforma : plataformas) {
             plataforma.Draw(ventana);
         }
-
         //Dibujar personajes
         personaje1->Draw(ventana);
         personaje2->Draw(ventana);
-
         //Dibujar proyectiles
         for (auto& proyectil : proyectiles)
         {
             proyectil.Draw(ventana);
         }
-
         //Dibujar Barra de Poder
         barraPoder->Draw(ventana);
         //Dibujar Mascara
         mascaraBarraPoder->Draw(ventana);
-
         //Dibujar temporalizador
         temporalizador->Draw(ventana);
 
@@ -199,7 +157,49 @@ public:
         //Dibujar GameOver
         estadoGameOver->Draw(ventana);
     }
+void cargar_recursos(){
+    float anchoPantalla = ventana.getSize().x;
+    float altoPantalla = ventana.getSize().y;
+    fondoPartida = std::make_unique<FondoPartida>(sf::Vector2f(anchoPantalla/2, altoPantalla/2),
+                                    anchoPantalla,altoPantalla,
+                                    "../images/mapa.jpg",1,1);
+    mascaraBarraPoder =std::make_unique<MascaraBarraPoder>(sf::Vector2f(anchoPantalla/2, altoPantalla-100.f),
+                                              anchoPantalla,200.f);
+    //Crear las plataformas
+    Plataforma plata1(sf::Vector2f(300.f, 600.f),400,100,
+                      "../images/Plt2.png",1,1);
+    Plataforma plata2(sf::Vector2f(600.f, 800.f),400,100,
+                      "../images/Plt1.png",1,1);
+    Plataforma plata3(sf::Vector2f(1200.f, 800.f),400,100,
+                      "../images/Plt1.png",1,1);
+    Plataforma plata4(sf::Vector2f(900.f, 600.f),300,100,
+                      "../images/Plt1.png",1,1);
+    Plataforma plata5(sf::Vector2f(1500.f, 600.f),400,100,
+                      "../images/Plt2.png",1,1);
+    plataformas.push_back(plata1);
+    plataformas.push_back(plata2);
+    plataformas.push_back(plata3);
+    plataformas.push_back(plata4);
+    plataformas.push_back(plata5);
 
+    //Crea la barra de poder
+    barraPoder =std::make_unique <CompBarraPoder>(sf::Vector2f(580, 1000), sf::Vector2f(955, 40),
+                                    sf::Color::Green, sf::Color::Black);
+    //Crear los personajes
+    personaje1 = std::make_unique<Personaje>(sf::Vector2f(300.f, 100.f),150,150,
+                                             "../images/cocodrilo.png",4,2);
+    personaje2 = std::make_unique<Personaje>(sf::Vector2f(1500.f, 100.f),150,150,
+                                             "../images/gatopsicopata.png",4,2);
+
+    //Crear el temporalizador
+    temporalizador = std::make_unique<TimerTurnos>(sf::Vector2f(1800.f,100.f),150.f,150.f);
+    esTurno1 = true;
+    //Crea el mensajeGameOver para ser usado cuando acabe
+    estadoGameOver = std::make_unique<GameOver>(sf::Vector2f (ventana.getSize().x/2.f,ventana.getSize().y/2.f),800,800);
+    //Crea la felcha de turno
+    flechaTurno =std::make_unique<FlechaTurno>(personaje1->getPosicion(),50,50);
+
+    }
 
 };
 

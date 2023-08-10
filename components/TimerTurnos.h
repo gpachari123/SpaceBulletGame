@@ -9,13 +9,12 @@
 #include "Plataforma.h"
 #include "../utils/VectorUtil.h"
 #include <SFML/Audio.hpp>
-class TimerTurnos: public Componente{
+class TimerTurnos: public Componente {
 
 private:
     sf::Clock clock;
     float frameTime = 1.f; // Tiempo entre cada frame de la animación (ajústalo según tu necesidad)
     bool estaCorriendo;
-
 public:
     ///Constructor Clase Plataforma
     TimerTurnos(sf::Vector2f posInicial, float ancho, float alto)
@@ -24,7 +23,6 @@ public:
         frame_actual.x = 0;
         frame_actual.y = 19;
     }
-
     ///Override funcion Draw
     void Draw(sf::RenderWindow& window) override{
         if (estaCorriendo){

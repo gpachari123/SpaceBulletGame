@@ -45,9 +45,6 @@ public:
         posicion = posicionN;
         sprite->setPosition(posicion + sf::Vector2f(0.f,-120.f));
     }
-
-
-
 };
 
 #endif //SPACEBULLET_FLECHATURNO_H
