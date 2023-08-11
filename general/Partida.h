@@ -22,8 +22,10 @@
 #include "../components/Personaje.h"
 #include "../utils/VectorUtil.h"
 #include "../components/factoryEscenarios.h"
+#include "../components/Observer.h"
+#include "../components/ObsPersonaje.h"
 #include <thread>
-class Partida {
+class Partida{
 private:
     sf::Vector2f aceleracionViento;
     const sf::Vector2f gravity = sf::Vector2f(0.f, 9.8f); // Gravedad (puedes ajustarla según tus necesidades)
@@ -39,7 +41,8 @@ private:
     std::unique_ptr<TimerTurnos> temporalizador;
     std::unique_ptr<FlechaTurno> flechaTurno;
     bool esTurno1;
-    std::unique_ptr<GameOver> estadoGameOver;
+    ObservadorPersonaje* obsPersona1;
+    ObservadorPersonaje* obsPersona2;
 public:
     Partida(sf::RenderWindow& window):
     ventana(window),
@@ -82,6 +85,7 @@ void thread_recursos(){
         barraPoder->HandleInput(event);
         temporalizador->HandleInput(event);
     }
+
     bool Update(){
         //Aplicar gravedad al personaje y actualizar su posicion
         personaje1->AplicarGravedad(deltaTime,gravity+sf::Vector2f (0.f,10.f),plataformas);
@@ -112,23 +116,15 @@ void thread_recursos(){
 
             }
         }
-        //Verificar estado de vida de los personajes
-        if (personaje1->getVida()<=0 || personaje2->getVida()<=0){
-            estadoGameOver->IniciarGameOver();
-        }
-        //Actualizar temporalizador
-        if (estadoGameOver->YaSeUsoGameOver()){
-            //std::cout<<"Ya llamar al menu"<<std::endl;
-            return false;
-        }
 
-        //Actualizar Flecha
+        //Actualizar Flecha de turno
         if (esTurno1)
             flechaTurno->Update(personaje1->getPosicion());
         else
             flechaTurno->Update(personaje2->getPosicion());
         return true;
     }
+
     void Draw(){
         //Dibujar Fondo de pantalla
         fondoPartida->Draw(ventana);
@@ -155,41 +151,40 @@ void thread_recursos(){
         flechaTurno->Draw(ventana);
 
         //Dibujar GameOver
-        estadoGameOver->Draw(ventana);
-    }
-void cargar_recursos(){
-    float anchoPantalla = ventana.getSize().x;
-    float altoPantalla = ventana.getSize().y;
-    fondoPartida = std::make_unique<FondoPartida>(sf::Vector2f(anchoPantalla/2, altoPantalla/2),
-                                    anchoPantalla,altoPantalla,
-                                    "../images/mapa.jpg",1,1);
-    mascaraBarraPoder =std::make_unique<MascaraBarraPoder>(sf::Vector2f(anchoPantalla/2, altoPantalla-100.f),
-                                              anchoPantalla,200.f);
-    //Crear las plataformas bajo un escenario
-
-    FactoryEscenarios* factoryEscenario = GeneradorEscenarioAleatorio::GenerarEscenario();
-    factoryEscenario->CrearEscenarios(plataformas);
-
-
-    //Crea la barra de poder
-    barraPoder =std::make_unique <CompBarraPoder>(sf::Vector2f(580, 1000), sf::Vector2f(955, 40),
-                                    sf::Color::Green, sf::Color::Black);
-    //Crear los personajes
-    personaje1 = std::make_unique<Personaje>(sf::Vector2f(300.f, 100.f),150,150,
-                                             "../images/cocodrilo.png",4,2);
-    personaje2 = std::make_unique<Personaje>(sf::Vector2f(1500.f, 100.f),150,150,
-                                             "../images/gatopsicopata.png",4,2);
-
-    //Crear el temporalizador
-    temporalizador = std::make_unique<TimerTurnos>(sf::Vector2f(1800.f,100.f),150.f,150.f);
-    esTurno1 = true;
-    //Crea el mensajeGameOver para ser usado cuando acabe
-    estadoGameOver = std::make_unique<GameOver>(sf::Vector2f (ventana.getSize().x/2.f,ventana.getSize().y/2.f),800,800);
-    //Crea la felcha de turno
-    flechaTurno =std::make_unique<FlechaTurno>(personaje1->getPosicion(),50,50);
-
+        obsPersona1->getGameOver()->Draw(ventana);
+        obsPersona2->getGameOver()->Draw(ventana);
     }
 
+    void cargar_recursos(){
+        float anchoPantalla = ventana.getSize().x;
+        float altoPantalla = ventana.getSize().y;
+        fondoPartida = std::make_unique<FondoPartida>(sf::Vector2f(anchoPantalla/2, altoPantalla/2),
+                                                      anchoPantalla,altoPantalla,
+                                                      "../images/mapa.jpg",1,1);
+        mascaraBarraPoder =std::make_unique<MascaraBarraPoder>(sf::Vector2f(anchoPantalla/2, altoPantalla-100.f),
+                                                               anchoPantalla,200.f);
+        //Crear las plataformas bajo un escenario
+        FactoryEscenarios* factoryEscenario = GeneradorEscenarioAleatorio::GenerarEscenario();
+        factoryEscenario->CrearEscenarios(plataformas);
+
+        //Crea la barra de poder
+        barraPoder =std::make_unique <CompBarraPoder>(sf::Vector2f(580, 1000), sf::Vector2f(955, 40),
+                                                      sf::Color::Green, sf::Color::Black);
+        //Crear los personajes
+        personaje1 = std::make_unique<Personaje>(sf::Vector2f(300.f, 100.f),150,150,
+                                                 "../images/cocodrilo.png",4,2);
+        personaje2 = std::make_unique<Personaje>(sf::Vector2f(1500.f, 100.f),150,150,
+                                                 "../images/gatopsicopata.png",4,2);
+
+        //Crear el temporalizador
+        temporalizador = std::make_unique<TimerTurnos>(sf::Vector2f(1800.f,100.f),150.f,150.f);
+        esTurno1 = true;
+        //Crea el observador para lanzar mensaje gameOver para ser usado cuando acabe
+        obsPersona1 = new ObservadorPersonaje(*personaje1,sf::Vector2f (ventana.getSize().x/2.f,ventana.getSize().y/2.f),800,800);
+        obsPersona2 = new ObservadorPersonaje(*personaje2,sf::Vector2f (ventana.getSize().x/2.f,ventana.getSize().y/2.f),800,800);
+        //Crea la felcha de turno
+        flechaTurno =std::make_unique<FlechaTurno>(personaje1->getPosicion(),50,50);
+    }
 };
 
 

@@ -12,6 +12,7 @@
 #include "Proyectil.h"
 #include "CompBarraVida.h"
 #include "AnguloDisparo.h"
+#include "Observer.h"
 
 class Personaje: public Componente{
 private:
@@ -23,8 +24,13 @@ private:
     //Componentes adicionales de personaje
     std::unique_ptr<CompBarraVida> barraVida;
     std::unique_ptr<AnguloDisparo> compAnguloDisparo;
-
-
+    //Observadores de personaje:
+    std::vector<Observer*> observadores;
+    void notifyObservers() {
+        for (Observer* observer : observadores) {
+            observer->onNotify();
+        }
+    }
 public:
     ///Constructor Clase Personaje
     Personaje(sf::Vector2f posInicial, float ancho, float alto,
@@ -175,6 +181,8 @@ public:
 
     void DisminuirVida(float vidaDisminuida){
         barraVida->disminuirVida(vidaDisminuida);
+        if (barraVida->getVida()<=0)
+            notifyObservers();
     }
 
     float getVida(){
@@ -193,6 +201,18 @@ public:
                        "../images/armorBala.png",5,1);
         projectiles.push_back(bala);
     }
+
+    void addObserver(Observer* observer){
+        observadores.push_back(observer);
+    }
+
+    void verificarVida(){
+        if (barraVida->getVida()<=0)
+            notifyObservers();
+    }
+
 };
+
+// Observer class
 
 #endif //SPACEBULLET_PERSONAJE_H

@@ -6,6 +6,7 @@
 #define SPACEBULLET_GAMEOVER_H
 
 #include "Componente.h"
+#include "Observer.h"
 #include "Plataforma.h"
 #include "../utils/VectorUtil.h"
 #include <SFML/Audio.hpp>
