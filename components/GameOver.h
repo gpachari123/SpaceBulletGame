@@ -13,7 +13,7 @@ class GameOver: public Componente{
 
 private:
     sf::Clock clock;
-    sf::Time waitTime = sf::seconds(5.0f);
+    sf::Time waitTime = sf::seconds(10.0f);
     bool estaCorriendo;
     bool yaSeLlamo;
 public:

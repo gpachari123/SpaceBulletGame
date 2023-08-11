@@ -10,6 +10,7 @@
 #include<iostream>
 #include <vector>
 #include<memory>
+#include <random>
 #include "Menu.h"
 #include "../components/FlechaTurno.h"
 #include "../components/GameOver.h"
@@ -28,7 +29,6 @@ private:
     const sf::Vector2f gravity = sf::Vector2f(0.f, 9.8f); // Gravedad (puedes ajustarla según tus necesidades)
     const float deltaTime = 10.f / 60.f; // Delta de tiempo para cálculos de movimiento (60 FPS)
     sf::RenderWindow& ventana;
-    FactoryEscenarios *factory;
     std::unique_ptr<FondoPartida> fondoPartida;
     std::unique_ptr<MascaraBarraPoder> mascaraBarraPoder;
     std::vector<Plataforma> plataformas;
@@ -165,22 +165,11 @@ void cargar_recursos(){
                                     "../images/mapa.jpg",1,1);
     mascaraBarraPoder =std::make_unique<MascaraBarraPoder>(sf::Vector2f(anchoPantalla/2, altoPantalla-100.f),
                                               anchoPantalla,200.f);
-    //Crear las plataformas
-    Plataforma plata1(sf::Vector2f(300.f, 600.f),400,100,
-                      "../images/Plt2.png",1,1);
-    Plataforma plata2(sf::Vector2f(600.f, 800.f),400,100,
-                      "../images/Plt1.png",1,1);
-    Plataforma plata3(sf::Vector2f(1200.f, 800.f),400,100,
-                      "../images/Plt1.png",1,1);
-    Plataforma plata4(sf::Vector2f(900.f, 600.f),300,100,
-                      "../images/Plt1.png",1,1);
-    Plataforma plata5(sf::Vector2f(1500.f, 600.f),400,100,
-                      "../images/Plt2.png",1,1);
-    plataformas.push_back(plata1);
-    plataformas.push_back(plata2);
-    plataformas.push_back(plata3);
-    plataformas.push_back(plata4);
-    plataformas.push_back(plata5);
+    //Crear las plataformas bajo un escenario
+
+    FactoryEscenarios* factoryEscenario = GeneradorEscenarioAleatorio::GenerarEscenario();
+    factoryEscenario->CrearEscenarios(plataformas);
+
 
     //Crea la barra de poder
     barraPoder =std::make_unique <CompBarraPoder>(sf::Vector2f(580, 1000), sf::Vector2f(955, 40),
